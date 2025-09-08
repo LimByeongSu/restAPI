@@ -1,6 +1,6 @@
 package com.rest1.domain.post.post.controller;
 
-import com.rest1.domain.post.post.entity.Post;
+import com.rest1.domain.post.post.dto.PostDto;
 import com.rest1.domain.post.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -13,18 +13,16 @@ import java.util.List;
 //@RestController -> 이걸 쓰면 @ResponseBody를 생략가능
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/posts")
+@RequestMapping("/api/v1/posts")    //모든 Mapping에 "/api/v1/posts"가 추가됨 
 public class ApiV1PostController {
     private final PostService postService;
 
     @GetMapping
     @Transactional(readOnly = true)
     @ResponseBody
-    public List<Post> list() {
-        //더이상 templates방식을 쓰지 않는다.
-        List<Post> posts = postService.findAll();
-        System.out.println("hihihi");
-
-        return posts;
+    public List<PostDto> list() {
+        return postService.findAll().stream()
+                .map(post -> new PostDto(post) )
+                .toList();
     }
 }
