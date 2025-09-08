@@ -29,7 +29,7 @@ public class ApiV1PostController {
                 .toList();
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     @Transactional(readOnly = true) //단순 조회는 readOnly를 붙여주자
     //단건 조회
     public PostDto getItem(@PathVariable Long id) {
