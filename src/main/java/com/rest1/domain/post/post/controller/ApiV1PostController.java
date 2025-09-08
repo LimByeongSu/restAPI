@@ -43,7 +43,7 @@ public class ApiV1PostController {
 
         return new RsData(
                 "204-1",
-                "%d번 게시물이 삭제되었습니다".formatted(),
+                "%d번 게시물이 삭제되었습니다".formatted(id),
                 new PostDto(post)
         );
     }
