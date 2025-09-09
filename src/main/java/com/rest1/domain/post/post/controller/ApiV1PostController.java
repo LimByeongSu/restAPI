@@ -8,8 +8,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +52,8 @@ public class ApiV1PostController {
         return rsData;
     }
 
+
+
     //들어온 JSON 데이터를 읽기위한 form데이터(Dto와 맥락이 같다)
     record PostWriteReqBody(
             @NotBlank
@@ -66,19 +66,34 @@ public class ApiV1PostController {
 
     }
 
+    record PostWriteResBody(    //응답용 데이터이므로 Response의 Res를 따옴
+            PostDto post,
+            long totalCount
+    ){
+
+    }
+
     @PostMapping
-    public ResponseEntity<RsData<PostDto>> createItem(//원래 url에서 값을 가져오는거였으면 @RequestParam, @PathVariable을 썼지만
+    @Transactional
+    public RsData<PostWriteResBody> createItem(//원래 url에서 값을 가져오는거였으면 @RequestParam, @PathVariable을 썼지만
                                                       //이제는 아니다. JSON으로 받는다.
-          @RequestBody @Valid ApiV1PostController.PostWriteReqBody form // @ResponseBody 랑 다르다.
+          @RequestBody @Valid PostWriteReqBody form // @ResponseBody 랑 다르다.
     ){
         Post post = postService.write(form.title, form.content);
-        RsData<PostDto> reData = new RsData<>(
+
+        long totalCount = postService.count();
+
+        return new RsData<>(
                 "201 - 1",
                 "%d번 게시물이 생성되었습니다.".formatted(post.getId()),
-                new PostDto(post)
+                new PostWriteResBody(
+                        new PostDto(post),
+                        totalCount
+                )
+
         );
 
-        return new ResponseEntity<>(reData, HttpStatus.CREATED);
+
 
     }
 }
