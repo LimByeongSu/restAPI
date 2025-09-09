@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -75,15 +76,15 @@ public class ApiV1PostController {
 
     @PostMapping
     @Transactional
-    public RsData<PostWriteResBody> createItem(//원래 url에서 값을 가져오는거였으면 @RequestParam, @PathVariable을 썼지만
-                                                      //이제는 아니다. JSON으로 받는다.
-          @RequestBody @Valid PostWriteReqBody form // @ResponseBody 랑 다르다.
+    public ResponseEntity<RsData<PostWriteResBody>> createItem(//원래 url에서 값을 가져오는거였으면 @RequestParam, @PathVariable을 썼지만
+                                                              //이제는 아니다. JSON으로 받는다.
+                                                              @RequestBody @Valid PostWriteReqBody form // @ResponseBody 랑 다르다.
     ){
         Post post = postService.write(form.title, form.content);
 
         long totalCount = postService.count();
 
-        return new RsData<>(
+        RsData<PostWriteResBody> reData = new RsData<>(
                 "201 - 1",
                 "%d번 게시물이 생성되었습니다.".formatted(post.getId()),
                 new PostWriteResBody(
@@ -93,7 +94,6 @@ public class ApiV1PostController {
 
         );
 
-
-
+        return ResponseEntity.status(201).body(reData);
     }
 }
